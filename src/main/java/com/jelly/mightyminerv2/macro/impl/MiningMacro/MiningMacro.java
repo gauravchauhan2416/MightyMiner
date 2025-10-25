@@ -153,7 +153,6 @@ public class MiningMacro extends AbstractMacro {
             case NO_PICKAXE_ABILITY:
                 disable("Cannot find messages for pickaxe ability! " +
                         "Either enable any pickaxe ability in HOTM or enable chat messages. You can also disable pickaxe ability in configs.");
-                break;
         }
     }
 
