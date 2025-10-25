@@ -35,11 +35,17 @@ public class ApplyAbilityState implements BlockMinerState {
     private final Clock timer1 = new Clock();
     private final Clock timer2 = new Clock();
 
-    private final long COOLDOWN = 200; // 0.2-second cooldown for activating ability
+    private final long COOLDOWN = 200;
+    private final long ABILITY_COOLDOWN_MS = 60000;
 
     @Override
     public void onStart(BlockMiner blockMiner) {
         log("Entering Apply Ability State");
+
+        if (!canUseAbility(blockMiner)) {
+            log("Ability still on cooldown. Skipping use.");
+            return;
+        }
 
         // Start the cooldown timer
         timer2.reset();
@@ -91,6 +97,8 @@ public class ApplyAbilityState implements BlockMinerState {
             timer2.reset();
             timer2.schedule(COOLDOWN);
             KeyBindUtil.rightClick();
+            markAbilityUsed(blockMiner);
+            log("Pickaxe ability activated (cooldown tracking mode)");
         }
 
         // If the second timer has ended, transition back to the starting state
@@ -132,5 +140,20 @@ public class ApplyAbilityState implements BlockMinerState {
     @Override
     public void onEnd(BlockMiner blockMiner) {
         log("Exiting Apply Ability State");
+    }
+
+    private boolean canUseAbility(BlockMiner blockMiner) {
+        Long lastUse = blockMiner.getLastAbilityUse();
+        if (lastUse == null) return true;
+        return System.currentTimeMillis() - lastUse >= ABILITY_COOLDOWN_MS;
+    }
+
+    private void markAbilityUsed(BlockMiner blockMiner) {
+        blockMiner.setLastAbilityUse(System.currentTimeMillis());
+    }
+
+    // Simple internal logging helper
+    private void log(String msg) {
+        System.out.println("[ApplyAbilityState] " + msg);
     }
 }
