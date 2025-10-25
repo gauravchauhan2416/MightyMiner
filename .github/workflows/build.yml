@@ -2,7 +2,7 @@ name: Run Gradle Build
 
 on:
   push:
-  workflow_dispatch:  # 👈 allows manual trigger from GitHub Actions UI
+  workflow_dispatch:
 
 jobs:
   gradle:
